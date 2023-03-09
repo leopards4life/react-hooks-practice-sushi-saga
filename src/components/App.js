@@ -5,6 +5,7 @@ import Table from "./Table";
 function App() {
   const [sushis, setSushis] = useState([]);
   const [sushiIndex, setSushiIndex] = useState(0);
+  const [wallet, setWallet] = useState(100);
 
   useEffect(() => {
     fetch("http://localhost:3001/sushis")
@@ -22,15 +23,20 @@ function App() {
   }
 
   function handleEatSushi(eatenSushi) {
-    const updatedSushis = sushis.map((sushi) => {
-    if (eatenSushi.id === sushi.id) {
-      return {...sushi, eaten: true};
+    if (wallet >= eatenSushi.price) {
+      const updatedSushis = sushis.map((sushi) => {
+        if (eatenSushi.id === sushi.id) {
+          return {...sushi, eaten: true}
+        } else {
+          return sushi
+        }
+      })
+      setSushis(updatedSushis);
+      setWallet((wallet) => wallet - eatenSushi.price);
     } else {
-      console.log("No matching id!")
+      alert("Need more money!")
     }
-    setSushis(updatedSushis);
-  })
-  }
+}
 
 
   return (
@@ -41,7 +47,9 @@ function App() {
         onSetSushiIndex={handleSetSushiIndex}
         onEatSushi={handleEatSushi}
       />
-      <Table />
+      <Table 
+      wallet={wallet}
+      />
     </div>
   );
 }
